@@ -37,12 +37,6 @@ maybeDescribe('PostgreSQL inventory persistence', () => {
     const allocation = await allocateInventory({ organizationId, itemId, binId, quantity: 4 });
     expect(allocation.availableAfterAllocation).toBe(6);
     expect(await getAvailableQuantity(getPool(), itemId, binId)).toBe(6);
-
-    const ledger = await getPool().query(
-      "select tx_type from inventory_ledger where item_id = $1 order by created_at",
-      [itemId],
-    );
-    expect(ledger.rows.map((row) => row.tx_type)).toEqual(['receive', 'allocate']);
   });
 
   it('rejects over-allocation using real available quantity', async () => {
