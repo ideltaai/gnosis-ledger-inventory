@@ -1,8 +1,13 @@
 import type { Db } from '../db/pool';
-import { calculateInventoryAvailability } from '../services/inventory-availability.service';
 
 export async function getAvailableQuantity(db: Db, itemId: string, binId?: string): Promise<number> {
-  return (await calculateInventoryAvailability(db, { itemId, binId })).available;
+  const result = await db.query<{ available: string }>(
+    `select coalesce(sum(quantity), 0) -
+      coalesce((select sum(quantity) from allocations where item_id = $1 and status = 'open' and ($2::uuid is null or bin_id = $2)), 0) as available
+     from inventory_units where item_id = $1 and status = 'available' and ($2::uuid is null or bin_id = $2)`,
+    [itemId, binId ?? null],
+  );
+  return Number(result.rows[0].available);
 }
 
 export async function addInventoryUnit(db: Db, input: {
