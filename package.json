@@ -1,0 +1,39 @@
+{
+  "name": "gnosis-ledger-inventory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:api": "tsx watch src/api/server.ts",
+    "dev:web": "vite --host 0.0.0.0",
+    "lint": "eslint . --max-warnings=0 && npm run check:lines",
+    "typecheck": "tsc --noEmit && vue-tsc --noEmit",
+    "test": "vitest run",
+    "build": "tsc --noEmit && vite build",
+    "check:lines": "node scripts/check-source-lines.mjs"
+  },
+  "dependencies": {
+    "@vitejs/plugin-vue": "latest",
+    "pg": "latest",
+    "vue": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@eslint/js": "latest",
+    "@types/node": "latest",
+    "@types/pg": "latest",
+    "@vue/eslint-config-typescript": "latest",
+    "@vue/test-utils": "latest",
+    "eslint": "latest",
+    "eslint-config-prettier": "latest",
+    "eslint-plugin-vue": "latest",
+    "jsdom": "latest",
+    "prettier": "latest",
+    "tsx": "latest",
+    "typescript": "latest",
+    "typescript-eslint": "latest",
+    "vite": "latest",
+    "vitest": "latest",
+    "vue-tsc": "latest"
+  }
+}
