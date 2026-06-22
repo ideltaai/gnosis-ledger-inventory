@@ -1,10 +1,10 @@
 # Removed Files
 
-No files were removed during Phase 0 or Phase 1 stabilization.
+No files were removed during Phase 0 stabilization.
 
 ## Placeholder audit
 
-Repository searches for placeholder-only TypeScript modules containing only `export {};` found no matches, so no placeholder source files required deletion.
+A repository search for placeholder-only TypeScript modules containing only `export {};` found no matches, so no placeholder source files required deletion.
 
 ## Legacy artifacts
 

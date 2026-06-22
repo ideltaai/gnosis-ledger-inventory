@@ -10,9 +10,7 @@
     "typecheck": "tsc --noEmit && vue-tsc --noEmit",
     "test": "vitest run",
     "build": "tsc --noEmit && vite build",
-    "check:lines": "node scripts/check-source-lines.mjs",
-    "migrate": "tsx src/db/migrate.ts",
-    "seed": "tsx src/db/seeds/nueprint.ts"
+    "check:lines": "node scripts/check-source-lines.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-vue": "latest",
