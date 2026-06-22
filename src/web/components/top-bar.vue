@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppLink from './app-link.vue';
 defineEmits<{ scan: [] }>();
 </script>
 
@@ -10,8 +11,8 @@ defineEmits<{ scan: [] }>();
     </div>
     <div class="top-actions">
       <button class="btn secondary" type="button" @click="$emit('scan')">▦ Scan</button>
-      <a class="btn primary" href="/receiving/new">⇩ Quick Receive</a>
-      <a class="btn magenta" href="/jobs/new">⊕ Create Job</a>
+      <AppLink class="btn primary" href="/receiving/new">⇩ Quick Receive</AppLink>
+      <AppLink class="btn magenta" href="/jobs/new">⊕ Create Job</AppLink>
     </div>
   </header>
 </template>

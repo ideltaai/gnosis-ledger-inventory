@@ -6,12 +6,23 @@ create table organizations (
   created_at timestamptz not null default now()
 );
 
+create table permissions (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique,
+  description text not null
+);
+
 create table roles (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid references organizations(id) on delete cascade,
   name text not null,
-  permissions text[] not null default '{}',
   unique (organization_id, name)
+);
+
+create table role_permissions (
+  role_id uuid not null references roles(id) on delete cascade,
+  permission_id uuid not null references permissions(id) on delete cascade,
+  primary key (role_id, permission_id)
 );
 
 create table users (
@@ -50,6 +61,14 @@ create table items (
   name text not null,
   uom text not null default 'ea',
   unique (organization_id, sku)
+);
+
+create table item_variants (
+  id uuid primary key default gen_random_uuid(),
+  item_id uuid not null references items(id) on delete cascade,
+  sku text not null unique,
+  name text not null,
+  attributes jsonb not null default '{}'
 );
 
 create table item_vendor_pricing (

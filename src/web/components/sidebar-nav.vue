@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppLink from './app-link.vue';
+import { currentPath } from '../router';
 const navItems = [
   ['Dashboard', '/dashboard', '▦'], ['Receiving', '/receiving', '⇩'], ['Inventory', '/inventory', '⬡'],
   ['Locations & Bins', '/locations', '⌖'], ['Jobs', '/jobs', '▣'], ['Pick Lists', '/pick-lists', '☑'],
@@ -16,13 +18,13 @@ const navItems = [
       <p>NuePrint MVP</p>
     </div>
     <nav class="nav-list" aria-label="Main navigation">
-      <a v-for="item in navItems" :key="item[0]" :href="item[1]" class="nav-item" :class="{ active: item[0] === 'Dashboard' }">
+      <AppLink v-for="item in navItems" :key="item[0]" :href="item[1]" class="nav-item" :class="{ active: currentPath === item[1] || (item[1] !== '/dashboard' && currentPath.startsWith(item[1])) }">
         <span>{{ item[2] }}</span>{{ item[0] }}
-      </a>
+      </AppLink>
     </nav>
     <footer class="sidebar-footer">
       <div class="user-card"><span class="avatar">DG</span><span><strong>Dan</strong><small>Admin</small></span></div>
-      <a class="sign-out" href="/sign-out">⇲ Sign Out</a>
+      <AppLink class="sign-out" href="/settings">⇲ Sign Out</AppLink>
       <div class="cmyk-footer"><i /><i /><i /><i /></div>
     </footer>
   </aside>

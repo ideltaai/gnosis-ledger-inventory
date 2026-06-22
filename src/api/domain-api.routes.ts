@@ -67,11 +67,7 @@ export async function handleDomainApi(req: IncomingMessage, res: ServerResponse,
 async function audited(action: string, entityType: string, write: (db: Db) => Promise<Record<string, unknown>>) {
   return withTransaction(async (db) => {
     const row = await write(db);
-    const organizationId = row.organization_id ? String(row.organization_id) : undefined;
-    if (!organizationId) {
-      throw new Error(`Cannot write audit log for ${entityType} without organization_id`);
-    }
-    await writeAuditLog(db, { organizationId, action, entityType, entityId: String(row.id), metadata: row });
+    await writeAuditLog(db, { organizationId: row.organization_id ? String(row.organization_id) : undefined, action, entityType, entityId: String(row.id), metadata: row });
     return row;
   });
 }

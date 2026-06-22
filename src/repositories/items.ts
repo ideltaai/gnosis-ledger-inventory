@@ -19,10 +19,25 @@ export async function createItem(db: Db, input: {
   return result.rows[0];
 }
 
-export async function getItem(db: Db, id: string): Promise<ItemRow | undefined> {
-  const result = await db.query<ItemRow>(
-    'select id, organization_id, sku, name, uom from items where id = $1',
-    [id],
+export async function createItemVariant(db: Db, input: {
+  itemId: string;
+  sku: string;
+  name: string;
+  attributes?: Record<string, unknown>;
+}): Promise<string> {
+  const result = await db.query<{ id: string }>(
+    `insert into item_variants (item_id, sku, name, attributes) values ($1, $2, $3, $4)
+     on conflict (sku) do update set name = excluded.name, attributes = excluded.attributes returning id`,
+    [input.itemId, input.sku, input.name, JSON.stringify(input.attributes ?? {})],
   );
-  return result.rows[0];
+  return result.rows[0].id;
+}
+
+export async function upsertItemVendorPrice(db: Db, itemId: string, vendorId: string, price: number): Promise<string> {
+  const result = await db.query<{ id: string }>(
+    `insert into item_vendor_pricing (item_id, vendor_id, price) values ($1, $2, $3)
+     on conflict (item_id, vendor_id) do update set price = excluded.price returning id`,
+    [itemId, vendorId, price],
+  );
+  return result.rows[0].id;
 }

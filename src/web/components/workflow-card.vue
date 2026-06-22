@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppLink from './app-link.vue';
 defineProps<{ title: string; description: string; button: string; href?: string; icon: string; note?: string; disabled?: boolean }>();
 defineEmits<{ action: [] }>();
 </script>
@@ -9,7 +10,7 @@ defineEmits<{ action: [] }>();
     <h3>{{ title }}</h3>
     <p>{{ description }}</p>
     <button v-if="!href" class="btn primary wide" type="button" :disabled="disabled" @click="$emit('action')">{{ button }}</button>
-    <a v-else class="btn primary wide" :class="{ disabled }" :href="disabled ? undefined : href">{{ button }}</a>
+    <AppLink v-else class="btn primary wide" :class="{ disabled }" :href="disabled ? '#' : href">{{ button }}</AppLink>
     <small v-if="note">{{ note }}</small>
   </article>
 </template>

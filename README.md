@@ -4,23 +4,21 @@ Standalone inventory ledger foundation for a production-ready TypeScript API and
 
 ## Guardrails
 
-* Standalone application: no WordPress runtime, Gnosis Dashboard dependency, portal API/frontend dependency, or other ledger product dependency.
-* Integrations are optional and configured through environment variables.
-* Hand-authored source files are kept below 300 lines.
-* Secrets stay out of git; copy `.env.example` to a local ignored env file when needed.
+- Standalone application: no WordPress runtime, Gnosis Dashboard dependency, portal API/frontend dependency, or other ledger product dependency.
+- Integrations are optional and configured through environment variables.
+- Hand-authored source files are kept below 300 lines.
+- Secrets stay out of git; copy `.env.example` to a local ignored env file when needed.
 
 ## Tooling
 
-* TypeScript for API, shared code, and Vue SFC type checking.
-* ESLint 9 flat config and Prettier-compatible formatting.
-* Vitest with jsdom.
-* Zod validation.
-* PostgreSQL via `pg`.
-* Vue 3 and Vite for the web app.
+- TypeScript for API, shared code, and Vue SFC type checking.
+- ESLint 9 flat config and Prettier-compatible formatting.
+- Vitest with jsdom.
+- Zod validation.
+- PostgreSQL via `pg`, optional until `DATABASE_URL` is provided.
+- Vue 3 and Vite for the web app.
 
 ## Commands
-
-Install and validate the project:
 
 ```bash
 npm install
@@ -28,18 +26,8 @@ npm run lint
 npm run typecheck
 npm test
 npm run build
-```
-
-Run database setup after `DATABASE_URL` is configured:
-
-```bash
-npm run migrate
-npm run seed
-```
-
-Start local development servers:
-
-```bash
+npm run db:migrate
+npm run db:seed
 npm run dev:api
 npm run dev:web
 ```
@@ -47,59 +35,37 @@ npm run dev:web
 ## Local development
 
 1. Install dependencies with `npm install`.
-2. Copy `.env.example` to `.env.local` or `.env` if local environment variables are needed.
-3. Set `DATABASE_URL` before running persistence workflows.
-4. Run migrations with `npm run migrate`.
-5. Run seed data with `npm run seed`.
-6. Start the API with `npm run dev:api`.
-7. Start the web client with `npm run dev:web`.
-8. Visit the Vite URL and confirm the health card renders.
+2. Optionally copy `.env.example` to `.env.local` and set `DATABASE_URL`.
+3. Start the API with `npm run dev:api`.
+4. Start the web client with `npm run dev:web`.
+5. Visit the Vite URL and confirm the health card renders.
 
 ## API smoke checks
 
 ```bash
 curl http://localhost:4317/api/health
-
-curl -i -X POST http://localhost:4317/api/items/validate \
+curl 'http://localhost:4317/api/inventory/availability?itemId=<item-uuid>&binId=<bin-uuid>'
+curl -i -X POST http://localhost:4317/api/receiving \
   -H 'content-type: application/json' \
-  -d '{"sku":"ABC-001","name":"Sample item"}'
-
-curl -i -X POST http://localhost:4317/api/items/validate \
+  -d '{"organizationId":"<org-uuid>","itemId":"<item-uuid>","binId":"<bin-uuid>","quantity":10}'
+curl -i -X POST http://localhost:4317/api/allocations \
   -H 'content-type: application/json' \
-  -d '{}'
+  -d '{"organizationId":"<org-uuid>","itemId":"<item-uuid>","binId":"<bin-uuid>","quantity":4}'
 ```
+
 
 ## PostgreSQL persistence
 
-Set `DATABASE_URL` before running persistence workflows.
-
-Example:
+Set `DATABASE_URL` before running persistence workflows. Migrations create the inventory schema, and seeds add NuePrint defaults for roles, categories, stock statuses, reason codes, and sample bins.
 
 ```bash
-DATABASE_URL=postgres://user:pass@localhost:5432/gnosis_ledger_inventory npm run migrate
-DATABASE_URL=postgres://user:pass@localhost:5432/gnosis_ledger_inventory npm run seed
+DATABASE_URL=postgres://user:pass@localhost:5432/gnosis_ledger_inventory npm run db:migrate
+DATABASE_URL=postgres://user:pass@localhost:5432/gnosis_ledger_inventory npm run db:seed
 ```
-
-Migrations create the inventory schema. Seeds add NuePrint defaults for:
-
-* default organization
-* roles and permissions
-* inventory categories
-* stock statuses
-* reason codes
-* sample vendors
-* sample locations and bins
-* sample inventory items
 
 Inventory-changing routes write through PostgreSQL transactions:
 
-* `POST /api/receiving` writes an inventory unit, inventory ledger row, and audit log.
-* `POST /api/allocations` reads available inventory, rejects over-allocation, writes allocation records, and writes audit logs.
-
-## Development rules
-
-* Do not add WordPress, portal frontend, portal API, Gnosis Dashboard, or other ledger-product dependencies.
-* Do not use in-memory arrays for persisted inventory workflows.
-* Do not create fake repository methods, stubs, TODO placeholders, or dead routes.
-* Keep imports clear and purpose-based.
-* Split any hand-authored source file before it exceeds 300 lines.
+- `POST /api/receiving` writes an inventory unit, inventory ledger row, and audit log.
+- `GET /api/inventory/availability?itemId=<uuid>&binId=<uuid>` derives availability from persisted units and open allocations.
+- `POST /api/allocations` reads available inventory, rejects over-allocation, writes allocation and ledger records, and writes audit logs.
+- Domain endpoints for categories, items, vendors, locations/bins, barcode mappings, jobs, reason codes, and roll measurements are documented in `docs/api/endpoints.md`.
