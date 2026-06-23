@@ -1,4 +1,13 @@
-import { ref } from 'vue';
+const authTokenKey = 'authToken';
 
-export const authToken = ref(sessionStorage.getItem('authToken') ?? '');
-export function setAuthToken(token: string) { authToken.value = token; token ? sessionStorage.setItem('authToken', token) : sessionStorage.removeItem('authToken'); }
+export function getAuthToken(): string | null {
+  return sessionStorage.getItem(authTokenKey);
+}
+
+export function setAuthToken(token: string): void {
+  sessionStorage.setItem(authTokenKey, token);
+}
+
+export function clearAuthToken(): void {
+  sessionStorage.removeItem(authTokenKey);
+}
