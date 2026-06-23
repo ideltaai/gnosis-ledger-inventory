@@ -10,8 +10,6 @@ import {
   upsertVendor,
 } from '../../repositories/master-data';
 import { createItem, createItemVariant, upsertItemVendorPrice } from '../../repositories/items';
-import { permissionKeys, rolePermissions } from '../../auth/permissions';
-import { hashPassword } from '../../auth/password-hashing.service';
 
 const categories = ['Roll Media', 'Rigid Substrates', 'Paper', 'Apparel', 'Inks', 'Maintenance', 'Consumables'];
 const vendors = ['Grimco', 'Fellers', 'S-One', 'SanMar'];
@@ -21,7 +19,11 @@ const reasonCodes = [
   ['job_allocation', 'Allocate to job', 'allocation'],
   ['damage', 'Damaged inventory', 'waste'],
 ];
-const permissions = permissionKeys.map((key) => [key, `Allows ${key}`]);
+const permissions = [
+  ['inventory:read', 'Read inventory records'],
+  ['inventory:write', 'Change inventory records'],
+  ['admin:manage', 'Manage administrative settings'],
+];
 
 export async function runSeeds() {
   return withTransaction(async (db) => {
@@ -29,12 +31,13 @@ export async function runSeeds() {
     const permissionIds = new Map<string, string>();
     for (const [code, description] of permissions) permissionIds.set(code, await upsertPermission(db, code, description));
 
-    const roleIds = new Map<string, string>();
-    for (const role of Object.keys(rolePermissions)) roleIds.set(role, await upsertRole(db, organizationId, role));
-    for (const [role, keys] of Object.entries(rolePermissions)) {
-      for (const key of keys) await grantPermission(db, roleIds.get(role)!, permissionIds.get(key)!);
-    }
-    await seedAdminUser(db, organizationId, roleIds.get('Admin')!);
+    const adminId = await upsertRole(db, organizationId, 'admin');
+    const operationsId = await upsertRole(db, organizationId, 'operations');
+    const viewerId = await upsertRole(db, organizationId, 'viewer');
+    for (const id of permissionIds.values()) await grantPermission(db, adminId, id);
+    await grantPermission(db, operationsId, permissionIds.get('inventory:read')!);
+    await grantPermission(db, operationsId, permissionIds.get('inventory:write')!);
+    await grantPermission(db, viewerId, permissionIds.get('inventory:read')!);
 
     for (const status of ['available', 'hold', 'allocated']) {
       await db.query('insert into stock_statuses (code, label) values ($1, $2) on conflict (code) do nothing', [
@@ -64,20 +67,6 @@ export async function runSeeds() {
     await seedItems(db, organizationId, categoryIds, vendorIds);
     return { organizationId };
   });
-}
-
-
-async function seedAdminUser(db: Db, organizationId: string, roleId: string) {
-  const email = process.env.DEFAULT_ADMIN_EMAIL ?? 'admin@nueprint.local';
-  const password = process.env.DEFAULT_ADMIN_PASSWORD ?? 'ChangeMe123!';
-  const user = await db.query<{ id: string }>(
-    `insert into users (organization_id, name, display_name, email, password_hash, status)
-     values ($1, 'NuePrint Admin', 'NuePrint Admin', $2, $3, 'active')
-     on conflict (email) do update set password_hash = excluded.password_hash, status = 'active' returning id`,
-    [organizationId, email, await hashPassword(password)],
-  );
-  await db.query('delete from user_roles where user_id = $1', [user.rows[0].id]);
-  await db.query('insert into user_roles (user_id, role_id) values ($1, $2)', [user.rows[0].id, roleId]);
 }
 
 async function seedItems(db: Db, organizationId: string, categoriesByName: Map<string, string>, vendorsByName: Map<string, string>) {

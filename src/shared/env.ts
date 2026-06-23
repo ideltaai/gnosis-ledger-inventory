@@ -9,5 +9,5 @@ const envSchema = z.object({
 export type AppEnv = z.infer<typeof envSchema>;
 
 export function readEnv(input: NodeJS.ProcessEnv = process.env): AppEnv {
-  return envSchema.parse({ ...input, API_PORT: input.PORT ?? input.API_PORT ?? 4317 });
+  return envSchema.parse(input);
 }
