@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { handleDomainApi } from './domain-api.routes';
 import { healthCheck } from './db';
 import { sendError, sendJson } from './responses';
+import { serveBuiltFrontend } from './static-file-server';
 import { readEnv } from '../shared/env';
 import { getPool } from '../db/pool';
 import { allocateInputSchema, allocateInventory, OverAllocationError } from '../services/allocation';
@@ -20,6 +21,15 @@ export function createApiServer() {
   return createServer(async (req, res) => {
     try {
       const url = new URL(req.url ?? '/', 'http://localhost');
+      if (!url.pathname.startsWith('/api/')) {
+        if (serveBuiltFrontend(req, res, url)) return;
+        return sendJson(res, 500, {
+          error: {
+            code: 'FRONTEND_BUILD_MISSING',
+            message: 'Frontend build is missing. Run npm run build before npm start.',
+          },
+        });
+      }
       if (req.method === 'OPTIONS') return sendJson(res, 204, {});
       if (req.method === 'GET' && url.pathname === '/api/health') {
         return sendJson(res, 200, { ok: true, checks: await healthCheck() });
@@ -57,7 +67,7 @@ export function createApiServer() {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const env = readEnv();
-  createApiServer().listen(env.API_PORT, () => {
-    console.log(JSON.stringify({ message: 'api_started', port: env.API_PORT }));
+  createApiServer().listen(env.API_PORT, '0.0.0.0', () => {
+    console.log(JSON.stringify({ message: 'api_started', host: '0.0.0.0', port: env.API_PORT }));
   });
 }
