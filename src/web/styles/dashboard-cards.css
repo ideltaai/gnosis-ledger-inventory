@@ -1,0 +1,118 @@
+.card {
+  background:#fff;
+  border:1px solid #E5E7EB;
+  border-radius:var(--radius-card);
+  box-shadow:0 4px 14px rgba(10,10,10,.04);
+  padding:20px}
+.status-grid {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:22px;
+  margin:24px 0}
+.status-card {
+  position:relative;
+  border-top:4px solid var(--cyan);
+  display:grid;
+  grid-template-columns:56px 1fr;
+  gap:16px}
+.status-card.success {
+  border-top-color:var(--success)}
+.status-card.warning {
+  border-top-color:var(--yellow)}
+.status-card.danger {
+  border-top-color:var(--danger)}
+.status-card.info {
+  border-top-color:var(--info)}
+.card-cross {
+  position:absolute;
+  right:18px;
+  top:18px;
+  width:24px;
+  height:24px;
+  border:1px solid #d1d5db;
+  border-radius:50%;
+  opacity:.75}
+.status-icon,.snapshot-icon {
+  display:grid;
+  place-items:center;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  font-size:28px;
+  background:#ecfeff;
+  color:var(--cyan)}
+.status-card h3,.snapshot-card h3,.workflow-card h3 {
+  margin:0 0 10px;
+  font-size:15px}
+.status-card strong {
+  font-size:24px}
+.status-card p {
+  color:var(--neutral);
+  margin:7px 0 18px}
+.status-badge {
+  display:inline-flex;
+  margin-left:8px;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800}
+.status-badge.success {
+  color:var(--success);
+  background:#dcfce7}
+.status-badge.warning {
+  color:#a16207;
+  background:#fef9c3}
+.status-badge.danger {
+  color:var(--danger);
+  background:#fee2e2}
+.status-badge.info {
+  color:var(--info);
+  background:#e0f2fe}
+.status-badge.neutral {
+  color:var(--neutral);
+  background:#f3f4f6}
+.card-link {
+  grid-column:1/-1;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  padding:11px 14px;
+  display:flex;
+  justify-content:space-between;
+  font-weight:700}
+.dashboard-section {
+  margin:26px 0}
+.section-heading {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:16px;
+  border-bottom:1px solid #d7dce3;
+  padding-bottom:10px}
+.section-heading h2 {
+  font-size:20px;
+  margin:0;
+  font-weight:800}
+.section-heading p {
+  margin:4px 0 0;
+  color:var(--neutral)}
+.workflow-grid {
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:16px}
+.workflow-card {
+  min-height:198px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  gap:10px}
+.workflow-icon {
+  font-size:42px;
+  color:#111}
+.workflow-card p {
+  font-size:14px;
+  color:#374151;
+  margin:0}
+.workflow-card small {
+  color:var(--neutral);
+  min-height:16px}
