@@ -2,17 +2,10 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { readJson } from '../api/request';
 import { sendJson } from '../api/responses';
 import { getPool } from '../db/pool';
-import { resetPasswordSchema } from './auth.schemas';
 import { requireAdmin } from './permission-guard';
+import { resetPasswordSchema } from './auth.schemas';
 import { createUserSchema, updateUserSchema } from './users.schemas';
-import {
-  createInternalUser,
-  deactivateUser,
-  listRoles,
-  listUsers,
-  resetUserPassword,
-  updateInternalUser,
-} from './users.service';
+import { createInternalUser, deactivateUser, listRoles, listUsers, resetUserPassword, updateInternalUser } from './users.service';
 
 export async function handleUsersRoutes(req: IncomingMessage, res: ServerResponse, url: URL): Promise<boolean> {
   if (url.pathname === '/api/roles' && req.method === 'GET') {
@@ -38,7 +31,7 @@ export async function handleUsersRoutes(req: IncomingMessage, res: ServerRespons
     return true;
   }
 
-  const userId = routeUserId(url);
+  const userId = routeUserId(url, 3);
   if (userId && url.pathname === `/api/users/${userId}` && req.method === 'PATCH') {
     await requireAdmin(req);
     const user = await updateInternalUser(userId, updateUserSchema.parse(await readJson(req)));
@@ -68,6 +61,6 @@ export async function handleUsersRoutes(req: IncomingMessage, res: ServerRespons
   return false;
 }
 
-function routeUserId(url: URL): string | undefined {
-  return url.pathname.split('/').at(3);
+function routeUserId(url: URL, index: number): string | undefined {
+  return url.pathname.split('/').at(index);
 }

@@ -8,7 +8,6 @@ const browserGlobals = {
   document: 'readonly',
   localStorage: 'readonly',
   location: 'readonly',
-  sessionStorage: 'readonly',
   URLSearchParams: 'readonly',
   window: 'readonly',
 };
@@ -37,13 +36,13 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/web/**/*.{ts,vue}'],
+    files: ['src/web/**/*.{ts,vue}', 'src/vite-env.d.ts'],
     languageOptions: {
       globals: browserGlobals,
     },
   },
   {
-    files: ['*.config.mjs', 'scripts/**/*.mjs', 'src/api/**/*.ts', 'src/db/**/*.ts', 'src/shared/**/*.ts'],
+    files: ['*.config.*', 'scripts/**/*.{js,mjs,cjs,ts}', 'src/api/**/*.ts', 'src/db/**/*.ts', 'src/shared/**/*.ts'],
     languageOptions: {
       globals: nodeGlobals,
     },
