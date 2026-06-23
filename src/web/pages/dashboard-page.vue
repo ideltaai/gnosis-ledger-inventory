@@ -9,7 +9,7 @@ import TopBar from '../components/top-bar.vue';
 import WorkflowCard from '../components/workflow-card.vue';
 import { apiGet } from '../http';
 
-type HealthResponse = { ok: boolean; checks: { database: 'connected' | 'not_configured' | 'error' } };
+type HealthResponse = { ok: boolean; checks: { database: 'ok' | 'not_configured' } };
 const health = ref<HealthResponse | null>(null);
 const healthFailed = ref(false);
 const scanOpen = ref(false);
@@ -18,15 +18,9 @@ const apiStatus = computed(() => healthFailed.value ? {
   value: 'Offline', badge: 'Connection Issue', tone: 'danger' as const,
   text: 'The dashboard could not reach the inventory API.',
 } : { value: 'Healthy', badge: 'Online', tone: 'success' as const, text: 'The inventory API is responding.' });
-const databaseStatus = computed(() => {
-  if (health.value?.checks.database === 'connected') {
-    return { value: 'Connected', badge: 'Live', tone: 'success' as const, text: 'Inventory data is being persisted.' };
-  }
-  if (health.value?.checks.database === 'error') {
-    return { value: 'Connection Error', badge: 'Database Error', tone: 'danger' as const, text: 'PostgreSQL is configured but not reachable.' };
-  }
-  return { value: 'Not Configured', badge: 'Setup Needed', tone: 'warning' as const, text: 'Connect PostgreSQL to enable persisted inventory workflows.' };
-});
+const databaseStatus = computed(() => health.value?.checks.database === 'ok' ? {
+  value: 'Connected', badge: 'Live', tone: 'success' as const, text: 'Inventory data is being persisted.',
+} : { value: 'Not Configured', badge: 'Setup Needed', tone: 'warning' as const, text: 'Connect PostgreSQL to enable persisted inventory workflows.' });
 
 const workflows = [
   ['Receive Material', 'Check in rolls, paper, rigid sheets, apparel, inks, and consumables.', 'Start Receiving', '/receiving/new', '⇩', 'Scan vendor barcode or search SKU'],

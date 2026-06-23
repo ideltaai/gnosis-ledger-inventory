@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 import { login as loginApi, me, type CurrentUser } from './api/auth-api';
-import { authToken, clearAuthToken, setAuthToken } from './auth-token-storage';
+import { authToken, setAuthToken } from './auth-token-storage';
 export const currentUser = ref<CurrentUser | null>(null);
 export const isAuthenticated = computed(() => !!authToken.value && !!currentUser.value);
 
@@ -16,7 +16,7 @@ export async function loadCurrentUser() {
 }
 
 export function logout() {
-  clearAuthToken();
+  setAuthToken('');
   currentUser.value = null;
 }
 
