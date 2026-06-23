@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import AppLink from './app-link.vue';
-import { currentUser, logout } from '../auth-state';
-import { currentPath, navigateTo } from '../router';
+import { currentPath } from '../router';
 const navItems = [
   ['Dashboard', '/dashboard', '▦'], ['Receiving', '/receiving', '⇩'], ['Inventory', '/inventory', '⬡'],
   ['Locations & Bins', '/locations', '⌖'], ['Jobs', '/jobs', '▣'], ['Pick Lists', '/pick-lists', '☑'],
@@ -24,8 +23,8 @@ const navItems = [
       </AppLink>
     </nav>
     <footer class="sidebar-footer">
-      <div class="user-card"><span class="avatar">{{ currentUser?.name.slice(0, 2).toUpperCase() ?? 'GI' }}</span><span><strong>{{ currentUser?.name ?? 'User' }}</strong><small>{{ currentUser?.role ?? 'Signed In' }}</small></span></div>
-      <button class="sign-out button-link" type="button" @click="logout(); navigateTo('/dashboard')">⇲ Sign Out</button>
+      <div class="user-card"><span class="avatar">DG</span><span><strong>Dan</strong><small>Admin</small></span></div>
+      <AppLink class="sign-out" href="/settings">⇲ Sign Out</AppLink>
       <div class="cmyk-footer"><i /><i /><i /><i /></div>
     </footer>
   </aside>
